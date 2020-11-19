@@ -6,7 +6,7 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "generate": "graphql-codegen"
+    "generate": "graphql-codegen --config codegen.yml"
   },
   "dependencies": {
     "core-js": "^3.6.5",
@@ -20,8 +20,9 @@
     "vuex": "^3.4.0"
   },
   "devDependencies": {
-    "@graphql-codegen/cli": "^1.19.2",
-    "@graphql-codegen/typescript": "^1.17.11",
+    "@graphql-codegen/cli": "1.19.2",
+    "@graphql-codegen/typescript": "1.17.11",
+    "@graphql-codegen/typescript-operations": "^1.17.10",
     "@types/graphql": "^14.5.0",
     "@typescript-eslint/eslint-plugin": "^2.33.0",
     "@typescript-eslint/parser": "^2.33.0",
