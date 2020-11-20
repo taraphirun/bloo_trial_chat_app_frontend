@@ -147,8 +147,8 @@ export default class App extends Vue {
       //         last_name
       //         nickname
       //         username
-      //         createdAt
-      //         updatedAt
+      //         created_at
+      //         updated_at
       //       }
       //     }
       //   `,
@@ -162,13 +162,12 @@ export default class App extends Vue {
               last_name
               nickname
               username
-              createdAt
-              updatedAt
+              created_at
+              updated_at
             }
           }
         `,
       });
-
       if (loginUser.data.me) {
         const data = loginUser.data.me;
         // loginUser.data.me
@@ -178,8 +177,8 @@ export default class App extends Vue {
           last_name: data.last_name,
           nickname: data.nickname,
           username: data.username,
-          createdAt: data.createdAt,
-          updatedAt: data.updatedAt,
+          created_at: data.created_at,
+          updated_at: data.updated_at,
         });
       }
       // console.log("resulst", result);

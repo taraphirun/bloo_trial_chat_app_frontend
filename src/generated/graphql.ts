@@ -27,6 +27,10 @@ export type QueryUserArgs = {
   id: Scalars["String"];
 };
 
+export type QueryMessagesArgs = {
+  created_at: Scalars["String"];
+};
+
 export type QueryMessageArgs = {
   id: Scalars["String"];
 };
@@ -34,8 +38,8 @@ export type QueryMessageArgs = {
 export type Mutation = {
   __typename?: "Mutation";
   _?: Maybe<Scalars["Boolean"]>;
-  signUpUser: Token;
-  loginUser?: Maybe<Token>;
+  signUpUser: User;
+  loginUser: User;
   logoutUser: Scalars["Boolean"];
   updateUser: User;
   deleteUser: User;
@@ -83,6 +87,17 @@ export type MutationDeleteMessageArgs = {
   id: Scalars["ID"];
 };
 
+export type Subscription = {
+  __typename?: "Subscription";
+  _?: Maybe<Scalars["Boolean"]>;
+  userLoggedIn: User;
+  userLoggedOut: User;
+  userTyping: User;
+  messageCreated: Message;
+  messageUpdated: Message;
+  messageDeleted: Message;
+};
+
 export type User = {
   __typename?: "User";
   id: Scalars["ID"];
@@ -91,8 +106,8 @@ export type User = {
   nickname: Scalars["String"];
   username: Scalars["String"];
   messages?: Maybe<Array<Maybe<Message>>>;
-  createdAt: Scalars["String"];
-  updatedAt: Scalars["String"];
+  created_at: Scalars["String"];
+  updated_at: Scalars["String"];
 };
 
 export type Token = {
@@ -105,8 +120,8 @@ export type Message = {
   id: Scalars["ID"];
   content: Scalars["String"];
   user_id: Scalars["String"];
-  createdAt: Scalars["String"];
-  updatedAt: Scalars["String"];
+  created_at: Scalars["String"];
+  updated_at: Scalars["String"];
   user?: Maybe<User>;
 };
 
