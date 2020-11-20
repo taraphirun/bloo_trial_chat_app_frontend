@@ -9,6 +9,7 @@
     "generate": "graphql-codegen --config codegen.yml"
   },
   "dependencies": {
+    "apollo-boost": "^0.4.9",
     "core-js": "^3.6.5",
     "graphql": "^15.4.0",
     "vue": "^2.6.11",
@@ -65,7 +66,9 @@
     },
     "rules": {
       "@typescript-eslint/no-var-requires": 0,
-      "@typescript-eslint/no-explicit-any": 0
+      "@typescript-eslint/no-explicit-any": 0,
+      "@typescript-eslint/camelcase": 0,
+      "@typescript-eslint/ban-ts-ignore": 0
     }
   },
   "browserslist": [
