@@ -1,8 +1,6 @@
 <template>
   <div class="home">
     <infinite-loading direction="top" @infinite="infiniteHandler" />
-    <!--    <InfiniteLoading direction="top" @infinite=""/>-->
-    <!--    <HelloWorld msg="Welcome to Your Vue.js + TypeScript App" />-->
     <div v-for="(item, $index) in list" :key="$index">
       <v-card class="my-3" max-width="60%">
         <v-row>
@@ -17,27 +15,43 @@
           </v-list-item-content>
         </v-row>
       </v-card>
-
-      <!-- Hacker News item loop -->
     </div>
+    <v-footer
+      app
+      color="transparent"
+      height="72"
+      inset
+      v-if="$store.state.isLoggedIn"
+    >
+      <v-text-field
+        v-model="content"
+        background-color="grey lighten-1"
+        dense
+        flat
+        hide-details
+        rounded
+        solo
+        @keyup.enter="sendMessage"
+      ></v-text-field>
+      <v-icon @click="sendMessage" x-large color="green darken-1">
+        mdi-send
+      </v-icon>
+    </v-footer>
   </div>
 </template>
-
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-import HelloWorld from "@/components/HelloWorld.vue"; // @ is an alias to /src
 import InfiniteLoading from "vue-infinite-loading";
-import axios from "axios";
 import gql from "graphql-tag";
 @Component({
   components: {
-    HelloWorld,
     InfiniteLoading,
   },
 })
 export default class Home extends Vue {
+  content = "";
   page = 1;
-  list = [];
+  list = [] as any;
   getColor() {
     const colors = [
       "grey",
@@ -53,13 +67,12 @@ export default class Home extends Vue {
     const index = Math.floor(Math.random() * 9);
     return `${colors[index]} lighten-1`;
   }
-
   async infiniteHandler($state: any) {
     this.$apollo
       .query({
         query: gql`
           query {
-            messages {
+            messages(created_at: "1605868835000") {
               id
               content
               created_at
@@ -83,6 +96,33 @@ export default class Home extends Vue {
           $state.complete();
         }
       });
+  }
+  async sendMessage() {
+    try {
+      if (this.content != null) {
+        const result = await this.$apollo.mutate({
+          mutation: gql`
+            mutation($content: String!) {
+              createMessage(content: $content) {
+                id
+                updated_at
+                content
+                user {
+                  nickname
+                }
+              }
+            }
+          `,
+          variables: {
+            content: this.content,
+          },
+        });
+        console.log("send", result);
+        this.list.push(result.data.createMessage);
+      }
+    } catch (e) {
+      console.log("Failed to create message", e);
+    }
   }
 }
 </script>

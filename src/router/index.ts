@@ -1,8 +1,6 @@
 import Vue from "vue";
 import VueRouter, { RouteConfig } from "vue-router";
 import Home from "../views/Home.vue";
-import store from "../store/index";
-import gql from "graphql-tag";
 // import { createProvider } from "../vue-apollo";
 // const apolloProvider: createProvider();
 const routes: Array<RouteConfig> = [

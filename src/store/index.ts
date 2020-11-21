@@ -15,6 +15,7 @@ export default new Vuex.Store({
       created_at: "",
       updated_at: "",
     },
+    isLoggedIn: false,
   },
   mutations: {
     [LOG_IN](state, user) {
@@ -24,7 +25,8 @@ export default new Vuex.Store({
         (state.user.last_name = user.last_name),
         (state.user.nickname = user.nickname),
         (state.user.created_at = user.created_at),
-        (state.user.updated_at = user.updated_at);
+        (state.user.updated_at = user.updated_at),
+        (state.isLoggedIn = true);
     },
     [LOG_OUT](state) {
       (state.user.id = null),
@@ -33,7 +35,8 @@ export default new Vuex.Store({
         (state.user.last_name = ""),
         (state.user.nickname = ""),
         (state.user.created_at = ""),
-        (state.user.updated_at = "");
+        (state.user.updated_at = ""),
+        (state.isLoggedIn = false);
     },
   },
   actions: {},

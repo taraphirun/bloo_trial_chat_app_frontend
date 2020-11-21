@@ -64,7 +64,7 @@ export default class Login extends Vue {
       });
       // this.$router.go(0);
       console.log("resulst", result);
-      // this.$router.go(0);
+      this.$router.go(0);
     } catch (e) {
       console.log("e", e);
     }
