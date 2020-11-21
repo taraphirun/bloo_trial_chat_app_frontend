@@ -125,7 +125,7 @@ export default class App extends Vue {
       console.log("Logout error", e);
     }
   }
-  async mounted() {
+  async getSession() {
     try {
       const loginUser = await this.$apollo.query({
         query: gql`
@@ -157,6 +157,54 @@ export default class App extends Vue {
     } catch (e) {
       console.log("Login error", e);
     }
+  }
+  updateUserOnline() {
+    const inter = window.setInterval(async () => {
+      try {
+        await this.$apollo.mutate({
+          mutation: gql`
+            mutation {
+              updateUserOnline
+            }
+          `,
+        });
+      } catch (e) {
+        console.log("Failed to update user online", e);
+        window.clearInterval(inter);
+      }
+    }, 5000);
+  }
+  subscribeUserOnline() {
+    try {
+      const subQuery = gql`
+        subscription {
+          userOnline {
+            username
+          }
+        }
+      `;
+      const observer = this.$apollo.subscribe({
+        query: subQuery,
+      });
+
+      observer.subscribe({
+        next(data) {
+          console.log(data);
+        },
+        error(error) {
+          console.error(error);
+        },
+      });
+    } catch (e) {
+      console.log("Error subscribing to user login", e);
+    }
+  }
+
+  async mounted() {
+    this.getSession().then(() => {
+      this.updateUserOnline();
+      this.subscribeUserOnline();
+    });
   }
 }
 </script>

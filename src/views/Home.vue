@@ -40,7 +40,7 @@
   </div>
 </template>
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
+import { Component, Vue, Watch } from "vue-property-decorator";
 import InfiniteLoading from "vue-infinite-loading";
 import gql from "graphql-tag";
 @Component({
@@ -71,8 +71,8 @@ export default class Home extends Vue {
     this.$apollo
       .query({
         query: gql`
-          query {
-            messages(limit: 2, created_at: "1605868835000") {
+          query($cursor: Int) {
+            messages(limit: 2, cursor: $cursor) {
               id
               content
               created_at
@@ -83,6 +83,9 @@ export default class Home extends Vue {
             }
           }
         `,
+        variables: {
+          cursor: this.list.length > 0 ? Number.parseInt(this.list[0].id) : 2,
+        },
       })
       .then((result) => {
         console.log("apollo result", result);
@@ -91,6 +94,10 @@ export default class Home extends Vue {
           this.page++;
           // @ts-ignore
           this.list.unshift(...data.reverse());
+          console.log(
+            "last index ",
+            this.list.length > 0 ? Number.parseInt(this.list[0].id) : 2
+          );
           $state.loaded();
         } else {
           $state.complete();
@@ -122,6 +129,7 @@ export default class Home extends Vue {
       }
     } catch (e) {
       console.log("Failed to create message", e);
+      this.$router.go(0);
     }
   }
 }
