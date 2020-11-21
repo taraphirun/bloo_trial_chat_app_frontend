@@ -2,7 +2,11 @@
   <div class="home">
     <infinite-loading direction="top" @infinite="infiniteHandler" />
     <div v-for="(item, $index) in list" :key="$index">
-      <v-card class="my-3" max-width="60%">
+      <v-card
+        class="my-3"
+        max-width="60%"
+        :color="$store.state.user.id == item.user.id ? 'grey' : 'green'"
+      >
         <v-row>
           <v-avatar
             :key="$index"
@@ -16,6 +20,10 @@
             <v-list-item-subtitle>{{
               new Date(Number.parseInt(item.created_at))
             }}</v-list-item-subtitle>
+            <v-list-item-subtitle>{{
+              $store.state.user.id == item.user.id ? true : false
+            }}</v-list-item-subtitle>
+            user: {{ item.user.username }}
           </v-list-item-content>
         </v-row>
       </v-card>
@@ -87,7 +95,8 @@ export default class Home extends Vue {
               created_at
               updated_at
               user {
-                nickname
+                username
+                id
               }
             }
           }
@@ -126,8 +135,10 @@ export default class Home extends Vue {
               createMessage(content: $content) {
                 id
                 updated_at
+                created_at
                 content
                 user {
+                  id
                   nickname
                 }
               }
@@ -138,12 +149,50 @@ export default class Home extends Vue {
           },
         });
         console.log("send", result);
-        this.list.push(result.data.createMessage);
+        // this.list.push(result.data.createMessage);
+        this.content = "";
       }
     } catch (e) {
       console.log("Failed to create message", e);
       this.$router.go(0);
     }
+  }
+  subscribeMessage() {
+    try {
+      const subQuery = gql`
+        subscription {
+          messageCreated {
+            id
+            content
+            created_at
+            user {
+              username
+            }
+          }
+        }
+      `;
+      const observer = this.$apollo.subscribe({
+        query: subQuery,
+      });
+      const setList = (msg: any) => {
+        this.list.push(msg);
+        console.log("this is msg", msg);
+      };
+      observer.subscribe({
+        next(data) {
+          setList(data.data.messageCreated);
+          console.log(data);
+        },
+        error(error) {
+          console.error(error);
+        },
+      });
+    } catch (e) {
+      console.log("Error subscribing to user login", e);
+    }
+  }
+  mounted() {
+    this.subscribeMessage();
   }
 }
 </script>
