@@ -11,7 +11,11 @@
             size="28"
           ></v-avatar>
           <v-list-item-content>
+            <v-list-item-title>{{ item.id }}</v-list-item-title>
             <v-list-item-content>{{ item.content }}</v-list-item-content>
+            <v-list-item-subtitle>{{
+              new Date(Number.parseInt(item.created_at))
+            }}</v-list-item-subtitle>
           </v-list-item-content>
         </v-row>
       </v-card>
@@ -52,6 +56,7 @@ export default class Home extends Vue {
   content = "";
   page = 1;
   list = [] as any;
+  list2D = [] as any;
   getColor() {
     const colors = [
       "grey",
@@ -68,11 +73,15 @@ export default class Home extends Vue {
     return `${colors[index]} lighten-1`;
   }
   async infiniteHandler($state: any) {
+    console.log(
+      "index",
+      this.list.length > 0 ? Number.parseInt(this.list[0].id) : 0
+    );
     this.$apollo
       .query({
         query: gql`
           query($cursor: Int) {
-            messages(limit: 2, cursor: $cursor) {
+            messages(limit: 5, cursor: $cursor) {
               id
               content
               created_at
@@ -84,20 +93,24 @@ export default class Home extends Vue {
           }
         `,
         variables: {
-          cursor: this.list.length > 0 ? Number.parseInt(this.list[0].id) : 2,
+          cursor: this.list.length > 0 ? Number.parseInt(this.list[0].id) : 0,
         },
       })
       .then((result) => {
-        console.log("apollo result", result);
+        console.log("apollo result", result.data.messages);
         const data = result.data.messages;
         if (data.length) {
           this.page++;
           // @ts-ignore
           this.list.unshift(...data.reverse());
-          console.log(
-            "last index ",
-            this.list.length > 0 ? Number.parseInt(this.list[0].id) : 2
-          );
+          // this.list.push(...data.reverse());
+          // this.list2D.push(...data.reverse());
+          // console.log("list2D", this.list2D);
+          // console.log("listlistlist", [...this.list]);
+          // console.log(
+          //   "last index ",
+          //   this.list.length > 0 ? Number.parseInt(this.list[0].id) : 2
+          // );
           $state.loaded();
         } else {
           $state.complete();

@@ -45,6 +45,7 @@
             </v-list-item>
           </v-list>
         </v-navigation-drawer>
+        fasd
         <!--        </v-card>-->
         <!--        <v-sheet color="grey lighten-5" height="128" width="100%"></v-sheet>-->
         <v-list class="pl-14" shaped>
