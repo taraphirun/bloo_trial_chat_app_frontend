@@ -72,7 +72,7 @@ export default class Home extends Vue {
       .query({
         query: gql`
           query {
-            messages(created_at: "1605868835000") {
+            messages(limit: 2, created_at: "1605868835000") {
               id
               content
               created_at

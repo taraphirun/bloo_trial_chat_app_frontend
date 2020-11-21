@@ -19,6 +19,8 @@ export type Query = {
   me?: Maybe<User>;
   user?: Maybe<User>;
   users?: Maybe<Array<Maybe<User>>>;
+  user_online?: Maybe<Array<Maybe<User>>>;
+  user_typing?: Maybe<Array<Maybe<User>>>;
   messages?: Maybe<Array<Maybe<Message>>>;
   message?: Maybe<Message>;
 };
@@ -28,7 +30,8 @@ export type QueryUserArgs = {
 };
 
 export type QueryMessagesArgs = {
-  created_at: Scalars["String"];
+  limit: Scalars["Int"];
+  created_at?: Maybe<Scalars["String"]>;
 };
 
 export type QueryMessageArgs = {
@@ -117,7 +120,7 @@ export type Token = {
 
 export type Message = {
   __typename?: "Message";
-  id: Scalars["ID"];
+  id?: Maybe<Scalars["ID"]>;
   content: Scalars["String"];
   user_id: Scalars["String"];
   created_at: Scalars["String"];
