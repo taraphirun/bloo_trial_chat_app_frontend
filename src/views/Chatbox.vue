@@ -35,6 +35,7 @@
       inset
       v-if="$store.state.isLoggedIn"
     >
+      TYPING>>>>{{ getUserTyping() }}
       <v-text-field
         v-model="content"
         background-color="grey lighten-1"
@@ -55,6 +56,8 @@
 import { Component, Vue, Watch } from "vue-property-decorator";
 import InfiniteLoading from "vue-infinite-loading";
 import gql from "graphql-tag";
+import _ from "lodash";
+import { Message, User } from "@/generated/graphql";
 @Component({
   components: {
     InfiniteLoading,
@@ -65,6 +68,12 @@ export default class Home extends Vue {
   page = 1;
   list = [] as any;
   list2D = [] as any;
+  userTyping = {} as User;
+  @Watch("userTyping")
+  getUserTyping() {
+    return this.userTyping;
+  }
+
   getColor() {
     const colors = [
       "grey",
@@ -81,10 +90,10 @@ export default class Home extends Vue {
     return `${colors[index]} lighten-1`;
   }
   async infiniteHandler($state: any) {
-    console.log(
-      "index",
-      this.list.length > 0 ? Number.parseInt(this.list[0].id) : 0
-    );
+    // console.log(
+    //   "index",
+    //   this.list.length > 0 ? Number.parseInt(this.list[0].id) : 0
+    // );
     this.$apollo
       .query({
         query: gql`
@@ -125,6 +134,30 @@ export default class Home extends Vue {
           $state.complete();
         }
       });
+  }
+  debouncedUserTyping = _.debounce(this.updateUserTyping, 500);
+  @Watch("content")
+  async onTypeUpdateUserTyping(v: number) {
+    if (v !== null) {
+      v && v.toString().length > 1 && this.debouncedUserTyping();
+    }
+  }
+  async updateUserTyping() {
+    try {
+      if (this.content != null) {
+        const updateUserTyping = await this.$apollo.mutate({
+          mutation: gql`
+            mutation {
+              updateUserTyping
+            }
+          `,
+        });
+        console.log("updateUserTyping", updateUserTyping);
+      }
+    } catch (e) {
+      console.log("Failed to update user typing", e);
+      this.$router.go(0);
+    }
   }
   async sendMessage() {
     try {
@@ -174,14 +207,41 @@ export default class Home extends Vue {
       const observer = this.$apollo.subscribe({
         query: subQuery,
       });
-      const setList = (msg: any) => {
+      const setList = (msg: Message) => {
         this.list.push(msg);
-        console.log("this is msg", msg);
       };
       observer.subscribe({
         next(data) {
           setList(data.data.messageCreated);
-          console.log(data);
+        },
+        error(error) {
+          console.error(error);
+        },
+      });
+    } catch (e) {
+      console.log("Error subscribing to user login", e);
+    }
+  }
+  subscribeUserTyping() {
+    try {
+      const subQuery = gql`
+        subscription {
+          userTyping {
+            username
+          }
+        }
+      `;
+      const observer = this.$apollo.subscribe({
+        query: subQuery,
+      });
+      const setUserTyping = (user: User) => {
+        this.userTyping = user;
+        console.log("this is user", user);
+      };
+      observer.subscribe({
+        next(data) {
+          setUserTyping(data.data.userTyping);
+          console.log("typing", data);
         },
         error(error) {
           console.error(error);
@@ -193,6 +253,7 @@ export default class Home extends Vue {
   }
   mounted() {
     this.subscribeMessage();
+    this.subscribeUserTyping();
   }
 }
 </script>
