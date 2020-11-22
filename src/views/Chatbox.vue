@@ -28,6 +28,20 @@
         </v-row>
       </v-card>
     </div>
+    <div v-if="user_typing.is_show">
+      <v-card class="my-3" max-width="60%">
+        <v-row>
+          <v-avatar
+            class="d-block text-center mx-auto mb-9"
+            :color="getColor()"
+            size="28"
+          ></v-avatar>
+          <v-list-item-content>
+            {{ user_typing.user.username }} is typing
+          </v-list-item-content>
+        </v-row>
+      </v-card>
+    </div>
     <v-footer
       app
       color="transparent"
@@ -35,7 +49,6 @@
       inset
       v-if="$store.state.isLoggedIn"
     >
-      TYPING>>>>{{ getUserTyping() }}
       <v-text-field
         v-model="content"
         background-color="grey lighten-1"
@@ -50,6 +63,9 @@
         mdi-send
       </v-icon>
     </v-footer>
+    <!--    <v-snackbar v-model="user_typing.is_show" :timeout="user_typing.timeout">-->
+    <!--      {{ user_typing.user.username }}-->
+    <!--    </v-snackbar>-->
   </div>
 </template>
 <script lang="ts">
@@ -68,12 +84,17 @@ export default class Home extends Vue {
   page = 1;
   list = [] as any;
   list2D = [] as any;
-  userTyping = {} as User;
-  @Watch("userTyping")
-  getUserTyping() {
-    return this.userTyping;
+  user_typing = {
+    timeout: 2000,
+    user: {} as User,
+    is_show: false,
+  };
+  @Watch("user_typing.is_show")
+  setIsShowTimeout() {
+    setTimeout(() => {
+      if (this.user_typing.is_show) this.user_typing.is_show = false;
+    }, this.user_typing.timeout);
   }
-
   getColor() {
     const colors = [
       "grey",
@@ -238,8 +259,10 @@ export default class Home extends Vue {
         },
       });
       const setUserTyping = (user: User) => {
-        this.userTyping = user;
-        console.log("this is user", user);
+        if (user != null) {
+          this.user_typing.user = user;
+          this.user_typing.is_show = true;
+        }
       };
       observer.subscribe({
         next(data) {
