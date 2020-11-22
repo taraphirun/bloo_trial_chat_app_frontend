@@ -29,6 +29,9 @@ const defaultOptions = {
   wsEndpoint: process.env.VUE_APP_GRAPHQL_WS || "ws://localhost:4000/graphql",
   // LocalStorage token
   tokenName: AUTH_TOKEN,
+  connectionParams: {
+    authToken: "testTokent",
+  },
   // Enable Automatic Query persisting with Apollo Engine
   persisting: false,
   // Use websockets for everything (no HTTP)

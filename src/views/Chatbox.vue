@@ -225,14 +225,17 @@ export default class Home extends Vue {
   subscribeUserTyping() {
     try {
       const subQuery = gql`
-        subscription {
-          userTyping {
+        subscription($id: ID!) {
+          userTyping(id: $id) {
             username
           }
         }
       `;
       const observer = this.$apollo.subscribe({
         query: subQuery,
+        variables: {
+          id: this.$store.state.user.id,
+        },
       });
       const setUserTyping = (user: User) => {
         this.userTyping = user;
@@ -248,7 +251,7 @@ export default class Home extends Vue {
         },
       });
     } catch (e) {
-      console.log("Error subscribing to user login", e);
+      console.log("Error subscribing to user typing", e);
     }
   }
   mounted() {
