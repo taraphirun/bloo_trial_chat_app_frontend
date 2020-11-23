@@ -1,11 +1,17 @@
 import Vue from "vue";
 import VueRouter, { RouteConfig } from "vue-router";
-import Home from "../views/Chatbox.vue";
+import Chatbox from "../views/Chatbox.vue";
+import Home from "../views/Home.vue";
 // import { createProvider } from "../vue-apollo";
 // const apolloProvider: createProvider();
 const routes: Array<RouteConfig> = [
   {
     path: "/",
+    name: "Chat",
+    component: Chatbox,
+  },
+  {
+    path: "/testing",
     name: "Home",
     component: Home,
   },

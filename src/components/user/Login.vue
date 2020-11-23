@@ -47,7 +47,6 @@ export default class Login extends Vue {
     password: null,
   };
   async login() {
-    console.log("user", this.user);
     try {
       const result = await this.$apollo.mutate({
         mutation: gql`
@@ -63,11 +62,8 @@ export default class Login extends Vue {
         },
       });
       // this.$router.go(0);
-      console.log("resulst", result);
       this.$router.go(0);
-    } catch (e) {
-      console.log("e", e);
-    }
+    } catch (e) {}
   }
 }
 </script>

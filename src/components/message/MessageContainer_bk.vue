@@ -1,26 +1,31 @@
 <template>
   <div class="home">
-    <div id="app">
-      <!--      <button v-on:click="addItem()">Add Item</button>-->
-      <div id="container" style="max-height: 85vh; overflow-y: scroll">
-        <div
-          class="message-bubble"
-          :class="me"
-          v-for="(item, $index) in list"
-          :key="$index"
-        >
-          <span class="from" :class="me">{{ item.user.username }}</span>
-          <br :class="me" />
-          <span class="message-text">{{ item.content }}</span>
-        </div>
-        <!--        <ul>-->
-        <!--          <li v-for="(item, $index) in list" :key="$index">-->
-        <!--            {{ item.content }}-->
-        <!--          </li>-->
-        <!--        </ul>-->
-      </div>
+    <infinite-loading direction="top" @infinite="infiniteHandler" />
+    <div v-for="(item, $index) in list" :key="$index">
+      <v-card
+        class="my-3"
+        max-width="60%"
+        :color="$store.state.user.id == item.user.id ? 'grey' : 'green'"
+      >
+        <v-row>
+          <v-avatar
+            :key="$index"
+            class="d-block text-center mx-auto mb-9"
+            :color="getColor()"
+            size="28"
+          ></v-avatar>
+          <v-list-item-content>
+            <v-list-item-subtitle
+              >{{ item.user.username }}:
+              {{
+                new Date(Number.parseInt(item.created_at))
+              }}</v-list-item-subtitle
+            >
+            <v-list-item-content>{{ item.content }}</v-list-item-content>
+          </v-list-item-content>
+        </v-row>
+      </v-card>
     </div>
-    <!--    test end-->
     <div v-if="user_typing.is_show">
       <v-card class="my-3" max-width="60%">
         <v-row>
@@ -72,7 +77,7 @@ import { Message, User } from "@/generated/graphql";
     InfiniteLoading,
   },
 })
-export default class ChatBox extends Vue {
+export default class MessageContainer extends Vue {
   content = "";
   page = 1;
   list = [] as any;
@@ -90,9 +95,6 @@ export default class ChatBox extends Vue {
         // return this.user_typing.is_show;
       }, this.user_typing.timeout);
     }
-  }
-  get me() {
-    return false;
   }
   getColor() {
     const colors = [
@@ -135,6 +137,7 @@ export default class ChatBox extends Vue {
         },
       })
       .then((result) => {
+        console.log("apollo result", result.data.messages);
         const data = result.data.messages;
         if (data.length) {
           this.page++;
@@ -171,6 +174,7 @@ export default class ChatBox extends Vue {
             }
           `,
         });
+        console.log("updateUserTyping", updateUserTyping);
       }
     } catch (e) {
       console.log("Failed to update user typing", e);
@@ -199,6 +203,7 @@ export default class ChatBox extends Vue {
             content: this.content,
           },
         });
+        console.log("send", result);
         // this.list.push(result.data.createMessage);
         this.content = "";
       }
@@ -231,7 +236,6 @@ export default class ChatBox extends Vue {
             this.user_typing.is_show = false;
           }
           this.list.push(msg);
-          this.scrollToBottom();
         }
       };
       observer.subscribe({
@@ -270,6 +274,7 @@ export default class ChatBox extends Vue {
       observer.subscribe({
         next(data) {
           setUserTyping(data.data.userTyping);
+          console.log("typing", data);
         },
         error(error) {
           console.error(error);
@@ -279,105 +284,9 @@ export default class ChatBox extends Vue {
       console.log("Error subscribing to user typing", e);
     }
   }
-
-  scrollToBottom() {
-    const container = this.$el.querySelector("#container");
-
-    container!.scrollTop = 9000000;
-  }
-  loadMessages() {
-    this.$apollo
-      .query({
-        query: gql`
-          query($cursor: Int) {
-            messages(limit: 5, cursor: $cursor) {
-              id
-              content
-              created_at
-              updated_at
-              user {
-                username
-                id
-              }
-            }
-          }
-        `,
-        variables: {
-          cursor: this.list.length > 0 ? Number.parseInt(this.list[0].id) : 0,
-        },
-      })
-      .then((result) => {
-        const data = result.data.messages;
-        if (data.length) {
-          this.list.unshift(...data.reverse());
-          this.scrollToBottom();
-        }
-      });
-  }
   mounted() {
     this.subscribeMessage();
     this.subscribeUserTyping();
-    this.loadMessages();
   }
 }
 </script>
-<style scoped>
-.message-bubble {
-  display: block;
-  max-width: 50%;
-  margin-bottom: 4px;
-  float: left;
-  clear: both;
-}
-.message-bubble.me {
-  float: right;
-}
-.from {
-  float: left;
-  margin: 4px;
-  font-size: 10px;
-  color: #9da7af;
-}
-.from.me {
-  display: none;
-}
-.message-bubble span {
-  display: block;
-}
-.message-bubble.me br.me {
-  display: none;
-}
-</style>
-
-<!--    <infinite-loading direction="top" @infinite="infiniteHandler" />-->
-<!--    <div-->
-<!--      id="container"-->
-<!--      v-for="(item, $index) in list"-->
-<!--      :key="$index"-->
-<!--      style="max-height: 200px; overflow-y: auto"-->
-<!--    >-->
-<!--      <v-card-->
-<!--        class="my-3"-->
-<!--        max-width="60%"-->
-<!--        :color="$store.state.user.id == item.user.id ? 'grey' : 'green'"-->
-<!--      >-->
-<!--        <v-row>-->
-<!--          <v-avatar-->
-<!--            :key="$index"-->
-<!--            class="d-block text-center mx-auto mb-9"-->
-<!--            :color="getColor()"-->
-<!--            size="28"-->
-<!--          ></v-avatar>-->
-<!--          <v-list-item-content>-->
-<!--            <v-list-item-subtitle-->
-<!--              >{{ item.user.username }}:-->
-<!--              {{-->
-<!--                new Date(Number.parseInt(item.created_at))-->
-<!--              }}</v-list-item-subtitle-->
-<!--            >-->
-<!--            <v-list-item-content>{{ item.content }}</v-list-item-content>-->
-<!--          </v-list-item-content>-->
-<!--        </v-row>-->
-<!--      </v-card>-->
-<!--    </div>-->
-<!--    test start-->

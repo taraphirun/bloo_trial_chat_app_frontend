@@ -1,20 +1,23 @@
 <template>
   <v-app id="inspire">
-    <div class="fill-height">
+    <div class="" style="max-height: 100%">
       <v-app-bar app clipped-right flat height="72">
+        TOP
         <v-spacer></v-spacer>
       </v-app-bar>
       <v-navigation-drawer
         v-model="drawer"
         app
         width="300"
-        permanent
         v-if="$store.state.isLoggedIn"
+        permanent
       >
         <!--        <v-card>-->
         <v-navigation-drawer
           v-model="drawer_mini"
-          :mini-variant.sync="mini"
+          absolute
+          :mini-variant="mini"
+          width="50"
           permanent
         >
           <v-list-item class="px-2">
@@ -24,11 +27,9 @@
               ></v-img>
             </v-list-item-avatar>
 
-            <v-list-item-title>John Leider</v-list-item-title>
-
-            <v-btn icon @click.stop="mini = !mini">
-              <v-icon>mdi-chevron-left</v-icon>
-            </v-btn>
+            <v-list-item-title>{{
+              $store.state.user.username
+            }}</v-list-item-title>
           </v-list-item>
 
           <v-divider></v-divider>
@@ -45,20 +46,22 @@
             </v-list-item>
           </v-list>
         </v-navigation-drawer>
-        fasd
-        <!--        </v-card>-->
-        <!--        <v-sheet color="grey lighten-5" height="128" width="100%"></v-sheet>-->
         <v-list class="pl-14" shaped>
-          <v-list-item v-for="n in 5" :key="n" link class="justify-center">
+          <v-list-item
+            v-for="n in usersOnline"
+            :key="n.id"
+            link
+            class="justify-center"
+          >
             <v-row>
               <v-avatar
-                :key="n"
+                :key="n.id"
                 class="d-block text-center mx-auto mb-9"
                 color="grey lighten-1"
                 size="28"
               ></v-avatar>
               <v-list-item-content>
-                <v-list-item-title>Item {{ n }}</v-list-item-title>
+                <v-list-item-title>{{ n.username }}</v-list-item-title>
               </v-list-item-content>
             </v-row>
           </v-list-item>
@@ -92,7 +95,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
+import { Component, Vue, Watch } from "vue-property-decorator";
 import Login from "@/components/user/Login.vue";
 import gql from "graphql-tag";
 import { LOG_IN, LOG_OUT } from "@/store/mutation-types";
@@ -101,6 +104,7 @@ export default class App extends Vue {
   drawer_mini = true;
   drawer = true;
   mini = true;
+  usersOnline = [];
   items = [
     { title: "Chat", icon: "mdi-chat" },
     { title: "My Account", icon: "mdi-account" },
@@ -124,6 +128,7 @@ export default class App extends Vue {
       this.$router.go(0);
     } catch (e) {
       console.log("Logout error", e);
+      this.$router.go(0);
     }
   }
   async getSession() {
@@ -157,6 +162,7 @@ export default class App extends Vue {
       }
     } catch (e) {
       console.log("Login error", e);
+      // this.$router.go(0);
     }
   }
   updateUserOnline() {
@@ -178,19 +184,26 @@ export default class App extends Vue {
   subscribeUserOnline() {
     try {
       const subQuery = gql`
-        subscription {
-          userOnline {
+        subscription($id: ID!) {
+          userOnline(id: $id) {
+            id
             username
           }
         }
       `;
       const observer = this.$apollo.subscribe({
         query: subQuery,
+        variables: {
+          id: this.$store.state.user.id,
+        },
       });
-
+      const setUserOnline = (users: any) => {
+        this.usersOnline = users;
+      };
       observer.subscribe({
         next(data) {
-          console.log(data);
+          // console.log(data);
+          setUserOnline(data.data.userOnline);
         },
         error(error) {
           console.error(error);
