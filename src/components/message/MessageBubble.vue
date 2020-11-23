@@ -4,7 +4,26 @@
       new Date(Number.parseInt(message.created_at))
     }}</span>
     <br :class="me" />
-    <span class="message-text">{{ message.content }}</span>
+    <span class="message-text pl-5">
+      <v-row>
+        {{ message.content }}
+        <v-spacer></v-spacer>
+        <v-icon @click="show" right left>mdi-dots-horizontal</v-icon>
+        <v-menu
+          v-model="showMenu"
+          :position-x="x"
+          :position-y="y"
+          absolute
+          offset-y
+        >
+          <v-list>
+            <v-list-item v-for="(item, index) in items" :key="index">
+              <v-list-item-title>{{ item.title }}</v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-menu>
+      </v-row>
+    </span>
   </div>
 </template>
 
@@ -16,11 +35,25 @@ import { Component, Vue, Prop } from "vue-property-decorator";
 })
 export default class MessageBubble extends Vue {
   @Prop() message;
-  text = "Sample text";
+  showMenu = false;
+  x = 0;
+  y = 0;
+  items = [
+    { title: "Click Me" },
+    { title: "Click Me" },
+    { title: "Click Me" },
+    { title: "Click Me 2" },
+  ];
+  show(e) {
+    e.preventDefault();
+    this.showMenu = false;
+    this.x = e.clientX;
+    this.y = e.clientY;
+    this.$nextTick(() => {
+      this.showMenu = true;
+    });
+  }
   get me() {
-    // const toggle = true;
-    // console.log("me message", this.message.user.id);
-    // console.log("me store", this.$store.state.user.id);
     return this.message.user.id === this.$store.state.user.id ? "me" : "";
   }
 }
@@ -36,7 +69,7 @@ export default class MessageBubble extends Vue {
 }
 .message-text {
   padding: 8px;
-  margin: 4px;
+  margin-top: 4px;
   text-align: left;
   background-color: #dfdfdf;
   border-radius: 4px;
@@ -49,7 +82,7 @@ export default class MessageBubble extends Vue {
 }
 .from {
   float: left;
-  margin: 4px;
+  /*margin: 4px;*/
   font-size: 10px;
   color: #9da7af;
 }
