@@ -5,33 +5,100 @@
       v-for="message in list"
       :message="message"
       :key="message.id"
+      :showMessageMenu="showMessageMenu"
     />
     <MessageBubble
       v-if="user_typing.is_show"
       :message="typingMessage"
       :key="'4'"
+      :showMessageMenu="showMessageMenu"
+    />
+    <v-menu
+      v-model="showMenu"
+      :position-x="x"
+      :position-y="y"
+      absolute
+      offset-y
+    >
+      <v-list>
+        <v-list-item>
+          <v-list-item-title
+            style="cursor: pointer"
+            @click="dialogEditMessage = true"
+            >Edit</v-list-item-title
+          >
+        </v-list-item>
+        <v-list-item>
+          <v-list-item-title
+            style="cursor: pointer"
+            @click="dialogDeleteMessage = true"
+            >Delete</v-list-item-title
+          >
+        </v-list-item>
+      </v-list>
+    </v-menu>
+    <DialogEditMessage
+      :dialog="dialogEditMessage"
+      :message="currentMessage"
+      @editMessage="dialogEditMessage = false"
+      @close="dialogEditMessage = false"
+    />
+    <DialogDeleteMessage
+      :dialog="dialogDeleteMessage"
+      :message="currentMessage"
+      @deleteMessage="dialogDeleteMessage = false"
+      @close="dialogDeleteMessage = false"
     />
   </div>
 </template>
-
 <script>
 import { Component, Vue, Watch, Prop } from "vue-property-decorator";
 import MessageBubble from "@/components/message/MessageBubble";
 import InfiniteLoading from "vue-infinite-loading";
 import gql from "graphql-tag";
+import DialogEditMessage from "@/components/dialogs/DialogEditMessage";
+import DialogDeleteMessage from "@/components/dialogs/DialogDeleteMessage";
 @Component({
-  components: { MessageBubble, InfiniteLoading },
+  components: {
+    DialogDeleteMessage,
+    DialogEditMessage,
+    MessageBubble,
+    InfiniteLoading,
+  },
 })
 export default class Home extends Vue {
-  list = [];
-  @Prop() user_typing;
-  typingMessage = {
-    created_at: new Date().getTime(),
-    content: " is typing",
-    user: {
-      id: this.user_typing ? this.user_typing.user.id : 0,
-    },
+  currentMessage = {};
+  dialogDeleteMessage = false;
+  dialogEditMessage = false;
+  user_typing = {
+    timeout: 2000,
+    user: {},
+    is_show: false,
   };
+  list = [];
+  showMenu = false;
+  x = 0;
+  y = 0;
+  get typingMessage() {
+    return {
+      created_at: new Date().getTime(),
+      content:
+        (this.user_typing ? this.user_typing.user.username : "") + " is typing",
+      user: {
+        id: this.user_typing ? this.user_typing.user.id : 0,
+      },
+    };
+  }
+  showMessageMenu(e, message) {
+    this.currentMessage = message;
+    e.preventDefault();
+    this.showMenu = false;
+    this.x = e.clientX;
+    this.y = e.clientY;
+    this.$nextTick(() => {
+      this.showMenu = true;
+    });
+  }
   subscribeMessage() {
     try {
       const subQuery = gql`
@@ -84,6 +151,7 @@ export default class Home extends Vue {
               content
               created_at
               updated_at
+              is_deleted
               user {
                 username
                 id
@@ -103,12 +171,7 @@ export default class Home extends Vue {
         }
       });
   }
-
   async infiniteHandler($state) {
-    // console.log(
-    //   "index",
-    //   this.list.length > 0 ? Number.parseInt(this.list[0].id) : 0
-    // );
     this.$apollo
       .query({
         query: gql`
@@ -118,6 +181,7 @@ export default class Home extends Vue {
               content
               created_at
               updated_at
+              is_deleted
               user {
                 username
                 id
@@ -135,14 +199,6 @@ export default class Home extends Vue {
           this.page++;
           // @ts-ignore
           this.list.unshift(...data.reverse());
-          // this.list.push(...data.reverse());
-          // this.list2D.push(...data.reverse());
-          // console.log("list2D", this.list2D);
-          // console.log("listlistlist", [...this.list]);
-          // console.log(
-          //   "last index ",
-          //   this.list.length > 0 ? Number.parseInt(this.list[0].id) : 2
-          // );
           $state.loaded();
         } else {
           $state.complete();
@@ -163,6 +219,7 @@ export default class Home extends Vue {
       const subQuery = gql`
         subscription($id: ID!) {
           userTyping(id: $id) {
+            id
             username
           }
         }
@@ -175,6 +232,7 @@ export default class Home extends Vue {
       });
       const setUserTyping = (user) => {
         if (user != null) {
+          console.log(user);
           this.user_typing.user = user;
           this.user_typing.is_show = true;
         }
@@ -201,7 +259,6 @@ export default class Home extends Vue {
       }, this.user_typing.timeout);
     }
   }
-
   async mounted() {
     this.subscribeMessage();
     this.subscribeUserTyping();

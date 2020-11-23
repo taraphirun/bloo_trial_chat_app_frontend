@@ -6,22 +6,14 @@
     <br :class="me" />
     <span class="message-text pl-5">
       <v-row>
-        {{ message.content }}
+        <span class="pr-3">{{ message.content }}</span>
         <v-spacer></v-spacer>
-        <v-icon @click="show" right left>mdi-dots-horizontal</v-icon>
-        <v-menu
-          v-model="showMenu"
-          :position-x="x"
-          :position-y="y"
-          absolute
-          offset-y
+        <v-icon
+          v-if="isOwnMessageAndNotDeleted"
+          @click="showMessageMenu($event, message)"
+          left
+          >mdi-dots-horizontal</v-icon
         >
-          <v-list>
-            <v-list-item v-for="(item, index) in items" :key="index">
-              <v-list-item-title>{{ item.title }}</v-list-item-title>
-            </v-list-item>
-          </v-list>
-        </v-menu>
       </v-row>
     </span>
   </div>
@@ -29,32 +21,20 @@
 
 <script>
 import { Component, Vue, Prop } from "vue-property-decorator";
-
 @Component({
   components: {},
 })
 export default class MessageBubble extends Vue {
   @Prop() message;
-  showMenu = false;
-  x = 0;
-  y = 0;
-  items = [
-    { title: "Click Me" },
-    { title: "Click Me" },
-    { title: "Click Me" },
-    { title: "Click Me 2" },
-  ];
-  show(e) {
-    e.preventDefault();
-    this.showMenu = false;
-    this.x = e.clientX;
-    this.y = e.clientY;
-    this.$nextTick(() => {
-      this.showMenu = true;
-    });
-  }
+  @Prop() showMessageMenu;
   get me() {
     return this.message.user.id === this.$store.state.user.id ? "me" : "";
+  }
+  get isOwnMessageAndNotDeleted() {
+    return (
+      this.message.user.id === this.$store.state.user.id &&
+      !this.message.is_deleted
+    );
   }
 }
 </script>

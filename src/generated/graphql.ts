@@ -31,7 +31,7 @@ export type QueryUserArgs = {
 
 export type QueryMessagesArgs = {
   limit: Scalars["Int"];
-  created_at?: Maybe<Scalars["String"]>;
+  cursor?: Maybe<Scalars["Int"]>;
 };
 
 export type QueryMessageArgs = {
@@ -46,9 +46,11 @@ export type Mutation = {
   logoutUser: Scalars["Boolean"];
   updateUser: User;
   deleteUser: User;
+  updateUserTyping: Scalars["Boolean"];
+  updateUserOnline: Scalars["Boolean"];
   createMessage: Message;
   updateMessage: Message;
-  deleteMessage: Message;
+  deleteMessage: Scalars["Boolean"];
 };
 
 export type MutationSignUpUserArgs = {
@@ -82,23 +84,30 @@ export type MutationCreateMessageArgs = {
 };
 
 export type MutationUpdateMessageArgs = {
-  id: Scalars["ID"];
+  id: Scalars["Int"];
   content: Scalars["String"];
 };
 
 export type MutationDeleteMessageArgs = {
-  id: Scalars["ID"];
+  id: Scalars["Int"];
 };
 
 export type Subscription = {
   __typename?: "Subscription";
   _?: Maybe<Scalars["Boolean"]>;
-  userLoggedIn: User;
-  userLoggedOut: User;
-  userTyping: User;
+  userOnline?: Maybe<Array<Maybe<User>>>;
+  userTyping?: Maybe<User>;
   messageCreated: Message;
   messageUpdated: Message;
   messageDeleted: Message;
+};
+
+export type SubscriptionUserOnlineArgs = {
+  id: Scalars["ID"];
+};
+
+export type SubscriptionUserTypingArgs = {
+  id: Scalars["ID"];
 };
 
 export type User = {

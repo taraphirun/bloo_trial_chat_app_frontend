@@ -25,9 +25,7 @@ import { Component, Prop, Vue } from "vue-property-decorator";
 })
 export default class MessageInput extends Vue {
   message = "";
-  text = "Sample text";
   submitMessage() {
-    // const toggle = true;
     this.$emit("submitMessage");
   }
 }

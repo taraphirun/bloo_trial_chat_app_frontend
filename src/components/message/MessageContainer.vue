@@ -2,7 +2,7 @@
   <div class="chat-container">
     <div class="body">
       <div class="container" ref="container">
-        <MessageList :user_typing="user_typing" />
+        <MessageList />
       </div>
     </div>
     <v-footer
@@ -48,11 +48,6 @@ import BadWordsFilter from "bad-words";
 export default class MessageContainer extends Vue {
   message = "";
   text = "Sample text";
-  user_typing = {
-    timeout: 2000,
-    user: {},
-    is_show: false,
-  };
   test = "motherfucker you go eat shit";
   filter = new BadWordsFilter();
   async sendMessage() {
@@ -110,13 +105,7 @@ export default class MessageContainer extends Vue {
       this.$router.go(0);
     }
   }
-
-  mounted() {
-    this.scrollToEnd();
-  }
   scrollToEnd() {
-    // console.log("container el", this.$refs.container);
-    // console.log("container height", this.$refs.container.scrollHeight);
     setTimeout(() => {
       window.scrollTo({
         left: 0,
@@ -124,6 +113,9 @@ export default class MessageContainer extends Vue {
         behavior: "smooth",
       });
     }, 50);
+  }
+  mounted() {
+    this.scrollToEnd();
   }
 }
 </script>
