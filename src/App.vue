@@ -2,7 +2,7 @@
   <v-app id="inspire">
     <div class="" style="max-height: 100%">
       <v-app-bar app clipped-right flat height="72">
-        TOP
+        Bloo Trial Chat App
         <v-spacer></v-spacer>
       </v-app-bar>
       <v-navigation-drawer
@@ -95,7 +95,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Watch } from "vue-property-decorator";
+import { Component, Vue } from "vue-property-decorator";
 import Login from "@/components/user/Login.vue";
 import gql from "graphql-tag";
 import { LOG_IN, LOG_OUT } from "@/store/mutation-types";

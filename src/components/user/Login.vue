@@ -8,7 +8,7 @@
           <v-col cols="12">
             <v-text-field
               label="Username"
-              :rules="[(v) => !!v || 'Username is required']"
+              :rules="[v => !!v || 'Username is required']"
               outlined
               required
               v-model="user.username"
@@ -17,7 +17,7 @@
           <v-col cols="12">
             <v-text-field
               label="password"
-              :rules="[(v) => !!v || 'Password is required']"
+              :rules="[v => !!v || 'Password is required']"
               outlined
               required
               type="password"
@@ -44,11 +44,11 @@ export default class Login extends Vue {
   valid = true;
   user = {
     username: null,
-    password: null,
+    password: null
   };
   async login() {
     try {
-      const result = await this.$apollo.mutate({
+      await this.$apollo.mutate({
         mutation: gql`
           mutation($username: String!, $password: String!) {
             loginUser(username: $username, password: $password) {
@@ -58,12 +58,14 @@ export default class Login extends Vue {
         `,
         variables: {
           username: this.user.username,
-          password: this.user.password,
-        },
+          password: this.user.password
+        }
       });
       // this.$router.go(0);
       this.$router.go(0);
-    } catch (e) {}
+    } catch (e) {
+      console.log("error on login", e);
+    }
   }
 }
 </script>

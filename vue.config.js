@@ -2,13 +2,20 @@ module.exports = {
   devServer: {
     proxy: {
       // proxy all requests starting with /api to jsonplaceholder
-      "/api": {
+      "/graphql": {
         target: "http://localhost:4000/graphql",
         changeOrigin: true,
         pathRewrite: {
-          "^/api": "",
+          "^/graphql": "",
         },
       },
+      // ws: {
+      //   target: "ws://localhost:4000/graphql",
+      //   changeOrigin: true,
+      //   pathRewrite: {
+      //     "^ws": "",
+      //   },
+      // },
     },
   },
   transpileDependencies: ["vuetify"],

@@ -36,14 +36,13 @@
 </template>
 
 <script>
-import { Component, Vue, Prop, Watch } from "vue-property-decorator";
+import { Component, Vue, Watch } from "vue-property-decorator";
 import MessageList from "@/components/message/MessageList";
-import MessageInput from "@/components/message/MessageInput";
 import gql from "graphql-tag";
 import _ from "lodash";
 import BadWordsFilter from "bad-words";
 @Component({
-  components: { MessageList, MessageInput },
+  components: { MessageList },
 })
 export default class MessageContainer extends Vue {
   message = "";
@@ -53,7 +52,7 @@ export default class MessageContainer extends Vue {
   async sendMessage() {
     try {
       if (this.message != null) {
-        const result = await this.$apollo.mutate({
+        await this.$apollo.mutate({
           mutation: gql`
             mutation($content: String!) {
               createMessage(content: $content) {

@@ -52,7 +52,7 @@
   </div>
 </template>
 <script>
-import { Component, Vue, Watch, Prop } from "vue-property-decorator";
+import { Component, Vue, Watch } from "vue-property-decorator";
 import MessageBubble from "@/components/message/MessageBubble";
 import InfiniteLoading from "vue-infinite-loading";
 import gql from "graphql-tag";
