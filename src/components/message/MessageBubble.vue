@@ -1,8 +1,9 @@
 <template>
   <div class="message-bubble" :class="me">
-    <span class="from" :class="me">{{
-      new Date(Number.parseInt(message.created_at))
-    }}</span>
+    <span class="from_username" :class="me">{{ message.user.username }} -</span>
+    <span class="from" :class="me">
+      {{ new Date(Number.parseInt(message.created_at)).toLocaleString() }}</span
+    >
     <br :class="me" />
     <span class="message-text pl-5">
       <v-row>
@@ -65,6 +66,16 @@ export default class MessageBubble extends Vue {
   /*margin: 4px;*/
   font-size: 10px;
   color: #9da7af;
+}
+
+.from_username {
+  float: left;
+  /*margin: 4px;*/
+  font-size: 12px;
+  color: black;
+}
+.from_username.me {
+  display: none;
 }
 .from.me {
   display: none;

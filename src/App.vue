@@ -2,6 +2,9 @@
   <v-app id="inspire">
     <div class="" style="max-height: 100%">
       <v-app-bar app clipped-right flat height="72">
+        <v-icon v-if="$store.state.isLoggedIn" @click="drawer = !drawer" left
+          >mdi-menu</v-icon
+        >
         Bloo Trial Chat App
         <v-spacer></v-spacer>
       </v-app-bar>
@@ -10,43 +13,12 @@
         app
         width="300"
         v-if="$store.state.isLoggedIn"
-        permanent
       >
-        <!--        <v-card>-->
-        <v-navigation-drawer
-          v-model="drawer_mini"
-          absolute
-          :mini-variant="mini"
-          width="50"
-          permanent
-        >
-          <v-list-item class="px-2">
-            <v-list-item-avatar>
-              <v-img
-                src="https://randomuser.me/api/portraits/men/85.jpg"
-              ></v-img>
-            </v-list-item-avatar>
-
-            <v-list-item-title>{{
-              $store.state.user.username
-            }}</v-list-item-title>
-          </v-list-item>
-
-          <v-divider></v-divider>
-
-          <v-list dense>
-            <v-list-item v-for="item in items" :key="item.title" link>
-              <v-list-item-icon>
-                <v-icon>{{ item.icon }}</v-icon>
-              </v-list-item-icon>
-
-              <v-list-item-content>
-                <v-list-item-title>{{ item.title }}</v-list-item-title>
-              </v-list-item-content>
-            </v-list-item>
-          </v-list>
-        </v-navigation-drawer>
         <v-list class="pl-14" shaped>
+          <h1>Users Online</h1>
+          <v-list-item v-if="usersOnline.length === 0">
+            You are alone
+          </v-list-item>
           <v-list-item
             v-for="n in usersOnline"
             :key="n.id"
@@ -57,7 +29,7 @@
               <v-avatar
                 :key="n.id"
                 class="d-block text-center mx-auto mb-9"
-                color="grey lighten-1"
+                color="green lighten-1"
                 size="28"
               ></v-avatar>
               <v-list-item-content>
@@ -168,6 +140,7 @@ export default class App extends Vue {
   updateUserOnline() {
     const inter = window.setInterval(async () => {
       try {
+        if (this.$store.state.user.id == null) return;
         await this.$apollo.mutate({
           mutation: gql`
             mutation {
@@ -183,6 +156,7 @@ export default class App extends Vue {
   }
   subscribeUserOnline() {
     try {
+      if (this.$store.state.user.id == null) return;
       const subQuery = gql`
         subscription($id: ID!) {
           userOnline(id: $id) {

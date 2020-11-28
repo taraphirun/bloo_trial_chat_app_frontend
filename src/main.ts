@@ -5,6 +5,7 @@ import store from "./store";
 import vuetify from "./plugins/vuetify";
 import { createProvider } from "./vue-apollo";
 import VueChatScroll from "vue-chat-scroll";
+import "dotenv/config";
 Vue.use(VueChatScroll);
 Vue.config.productionTip = false;
 

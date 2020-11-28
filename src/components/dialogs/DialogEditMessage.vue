@@ -9,7 +9,11 @@
           <v-container>
             <v-row>
               <v-col cols="12">
-                <v-text-field required v-model="updatedMessage"></v-text-field>
+                <v-text-field
+                  required
+                  v-model="updatedMessage"
+                  @keyup.enter="editMessage"
+                ></v-text-field>
               </v-col>
             </v-row>
           </v-container>
@@ -25,7 +29,7 @@
 </template>
 
 <script>
-import { Component, Prop, Vue } from "vue-property-decorator";
+import { Component, Prop, Vue, Watch } from "vue-property-decorator";
 import gql from "graphql-tag";
 @Component({
   components: {},
@@ -34,6 +38,10 @@ export default class DialogEditMessage extends Vue {
   @Prop() dialog;
   @Prop() message;
   updatedMessage = null;
+  @Watch("message.content")
+  updateContainerMessage() {
+    this.updatedMessage = this.message.content;
+  }
   async editMessage() {
     try {
       if (this.updatedMessage != null) {
@@ -59,9 +67,6 @@ export default class DialogEditMessage extends Vue {
   }
   emitClose() {
     this.$emit("close");
-  }
-  mounted() {
-    this.updatedMessage = this.message.content;
   }
 }
 </script>

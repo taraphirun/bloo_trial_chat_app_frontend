@@ -58,6 +58,7 @@ import InfiniteLoading from "vue-infinite-loading";
 import gql from "graphql-tag";
 import DialogEditMessage from "@/components/dialogs/DialogEditMessage";
 import DialogDeleteMessage from "@/components/dialogs/DialogDeleteMessage";
+import _ from "lodash";
 @Component({
   components: {
     DialogDeleteMessage,
@@ -141,12 +142,81 @@ export default class Home extends Vue {
       console.log("Error subscribing to user login", e);
     }
   }
+  subscribeMessageUpdate() {
+    try {
+      const subQuery = gql`
+        subscription {
+          messageUpdated {
+            content
+            id
+          }
+        }
+      `;
+      const observer = this.$apollo.subscribe({
+        query: subQuery,
+      });
+      const updateMessageInList = (msg) => {
+        if (msg) {
+          const index = _.findIndex(this.list, {
+            id: msg.id,
+          });
+          if (index > -1) this.list[index].content = msg.content;
+        }
+      };
+      observer.subscribe({
+        next(data) {
+          updateMessageInList(data.data.messageUpdated);
+        },
+        error(error) {
+          console.error(error);
+        },
+      });
+    } catch (e) {
+      console.log("Error subscribing to user login", e);
+    }
+  }
+  subscribeMessageDelete() {
+    try {
+      const subQuery = gql`
+        subscription {
+          messageDeleted {
+            content
+            id
+          }
+        }
+      `;
+      const observer = this.$apollo.subscribe({
+        query: subQuery,
+      });
+      const updateMessageInList = (msg) => {
+        if (msg) {
+          const index = _.findIndex(this.list, {
+            id: msg.id,
+          });
+          if (index > -1) {
+            this.list[index].content = msg.content;
+            this.list[index].is_deleted = true;
+          }
+        }
+      };
+      observer.subscribe({
+        next(data) {
+          updateMessageInList(data.data.messageDeleted);
+        },
+        error(error) {
+          console.error(error);
+        },
+      });
+    } catch (e) {
+      console.log("Error subscribing to user login", e);
+    }
+  }
   async loadMessages() {
     await this.$apollo
       .query({
         query: gql`
           query($cursor: Int) {
-            messages(limit: 5, cursor: $cursor) {
+            messages(limit: 20, cursor: $cursor) {
               id
               content
               created_at
@@ -176,7 +246,7 @@ export default class Home extends Vue {
       .query({
         query: gql`
           query($cursor: Int) {
-            messages(limit: 5, cursor: $cursor) {
+            messages(limit: 20, cursor: $cursor) {
               id
               content
               created_at
@@ -261,6 +331,8 @@ export default class Home extends Vue {
   }
   async mounted() {
     this.subscribeMessage();
+    this.subscribeMessageUpdate();
+    this.subscribeMessageDelete();
     this.subscribeUserTyping();
     this.scrollToEnd();
   }

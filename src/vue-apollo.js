@@ -12,7 +12,7 @@ Vue.use(VueApollo);
 const AUTH_TOKEN = "apollo-token";
 
 // Http endpoint
-const httpEndpoint = process.env.VUE_APP_GRAPHQL_HTTP || "/graphql";
+const httpEndpoint = process.env.VUE_APP_GRAPHQL_HTTP;
 // Files URL root
 export const filesRoot =
   process.env.VUE_APP_FILES_ROOT ||
@@ -26,7 +26,7 @@ const defaultOptions = {
   httpEndpoint,
   // You can use `wss` for secure connection (recommended in production)
   // Use `null` to disable subscriptions
-  wsEndpoint: process.env.VUE_APP_GRAPHQL_WS || "wss://chat.phirun.me/graphql",
+  wsEndpoint: process.env.VUE_APP_GRAPHQL_WS,
   // LocalStorage token
   tokenName: AUTH_TOKEN,
   connectionParams: {
