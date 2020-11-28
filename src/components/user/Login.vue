@@ -26,16 +26,11 @@
           <!--            />-->
           <!--          </v-col>-->
           <v-col class="justify-end" cols="auto">
-            <v-btn :disabled="!valid" @click="login" class="primary">
-              Login
-            </v-btn>
+            <v-btn @click="login" class="primary"> Login </v-btn>
           </v-col>
         </v-row>
       </v-form>
     </v-card>
-    <div class="text-center pa-3">
-      <a href="/signUp" style="cursor: pointer"> Sign Up</a>
-    </div>
   </v-col>
 </template>
 <script lang="ts">
@@ -44,26 +39,28 @@ import gql from "graphql-tag";
 
 @Component({ components: {} })
 export default class Login extends Vue {
-  valid = true;
+  valid = false;
   user = {
     username: null,
   };
   async login() {
     try {
-      await this.$apollo.mutate({
-        mutation: gql`
-          mutation($username: String!) {
-            loginUser(username: $username) {
-              username
+      if ((this.$refs.form as any).validate()) {
+        await this.$apollo.mutate({
+          mutation: gql`
+            mutation($username: String!) {
+              loginUser(username: $username) {
+                username
+              }
             }
-          }
-        `,
-        variables: {
-          username: this.user.username,
-        },
-      });
-      // this.$router.go(0);
-      this.$router.go(0);
+          `,
+          variables: {
+            username: this.user.username,
+          },
+        });
+        // this.$router.go(0);
+        this.$router.go(0);
+      }
     } catch (e) {
       console.log("error on login", e);
     }
