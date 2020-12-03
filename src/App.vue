@@ -11,7 +11,7 @@
       <v-navigation-drawer
         v-model="drawer"
         app
-        width="300"
+        width="250"
         v-if="$store.state.isLoggedIn"
       >
         <v-list class="pl-14" shaped>
@@ -43,7 +43,7 @@
         </v-list>
       </v-navigation-drawer>
 
-      <v-main class="fill-height background">
+      <v-main class="fill-height background main-container">
         <div class="pa-3" v-if="$store.state.isLoggedIn">
           <router-view />
         </div>
@@ -73,9 +73,8 @@ import gql from "graphql-tag";
 import { LOG_IN, LOG_OUT } from "@/store/mutation-types";
 @Component({ components: { Login } })
 export default class App extends Vue {
-  drawer_mini = true;
-  drawer = true;
-  mini = true;
+  drawer = false;
+  mini = false;
   usersOnline = [];
   items = [
     { title: "Chat", icon: "mdi-chat" },
@@ -194,3 +193,8 @@ export default class App extends Vue {
   }
 }
 </script>
+<style scoped>
+.main-container {
+  background-color: floralwhite;
+}
+</style>

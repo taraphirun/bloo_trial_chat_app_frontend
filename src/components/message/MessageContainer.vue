@@ -1,27 +1,22 @@
 <template>
-  <div class="chat-container">
-    <div class="body">
-      <div class="container" ref="container">
-        <MessageList />
-      </div>
+  <div class="container chat-container">
+    <div ref="container">
+      <MessageList />
     </div>
+
     <v-footer
+      class="custom-footer"
       app
-      color="transparent"
       height="72"
-      inset
       v-if="$store.state.isLoggedIn"
     >
-      <!--      <MessageInput @submitMessage="scrollToEnd" />-->
       <div style="width: 100%">
         <v-row>
           <v-text-field
-            background-color="white lighten-1"
+            class="input-box"
             dense
-            flat
             hide-details
             solo
-            outlined
             v-model="message"
             @keyup.enter="sendMessage"
           ></v-text-field>
@@ -119,4 +114,19 @@ export default class MessageContainer extends Vue {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.chat-container {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background-color: #d7d9da;
+}
+.input-box {
+  border-radius: 28px;
+  background: #cdd9e0;
+  box-shadow: inset 14px 14px 28px #81898d, inset -14px -14px 28px #ffffff;
+}
+.custom-footer {
+  background-color: floralwhite !important;
+}
+</style>

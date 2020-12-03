@@ -1,20 +1,20 @@
 <template>
   <div class="message-bubble" :class="me">
-    <span class="from_username" :class="me">{{ message.user.username }} -</span>
-    <span class="from" :class="me">
-      {{ new Date(Number.parseInt(message.created_at)).toLocaleString() }}</span
-    >
+    <!--    <span class="from_username" :class="me">{{ message.user.username }} -</span>-->
+    <!--    <span class="from" :class="me">-->
+    <!--      {{ new Date(Number.parseInt(message.created_at)).toLocaleString() }}</span-->
+    <!--    >-->
     <br :class="me" />
     <span class="message-text pl-5">
       <v-row>
         <span class="pr-3">{{ message.content }}</span>
-        <v-spacer></v-spacer>
-        <v-icon
-          v-if="isOwnMessageAndNotDeleted"
-          @click="showMessageMenu($event, message)"
-          left
-          >mdi-dots-horizontal</v-icon
-        >
+        <!--        <v-spacer></v-spacer>-->
+        <!--        <v-icon-->
+        <!--          v-if="isOwnMessageAndNotDeleted"-->
+        <!--          @click="showMessageMenu($event, message)"-->
+        <!--          left-->
+        <!--          >mdi-dots-horizontal</v-icon-->
+        <!--        >-->
       </v-row>
     </span>
   </div>
@@ -43,23 +43,26 @@ export default class MessageBubble extends Vue {
 <style scoped>
 .message-bubble {
   display: block;
-  max-width: 50%;
+  max-width: 80%;
   margin-bottom: 4px;
   float: left;
   clear: both;
+  padding: 0px;
 }
 .message-text {
-  padding: 8px;
+  border-radius: 10px;
+  background: skyblue;
+  box-shadow: 8px 8px 16px #c8cacb, -8px -8px 16px #e6e8e9;
+  display: none;
+  padding: 8px 15px 8px 25px;
   margin-top: 4px;
   text-align: left;
-  background-color: #dfdfdf;
-  border-radius: 4px;
 }
 .message-bubble.me {
   float: right;
 }
 .message-bubble.me .message-text {
-  background-color: #9ec6f5;
+  background-color: mistyrose;
 }
 .from {
   float: left;

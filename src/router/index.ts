@@ -1,11 +1,12 @@
 import Vue from "vue";
 import VueRouter, { RouteConfig } from "vue-router";
 import Home from "../views/Home.vue";
+import MessageContainer from "@/components/message/MessageContainer.vue";
 const routes: Array<RouteConfig> = [
   {
     path: "/",
     name: "Home",
-    component: Home,
+    component: MessageContainer,
   },
 ];
 
