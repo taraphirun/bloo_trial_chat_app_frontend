@@ -97,10 +97,8 @@ export default class App extends Vue {
         `,
       });
       this.$store.commit(LOG_OUT);
-      this.$router.go(0);
     } catch (e) {
       console.log("Logout error", e);
-      this.$router.go(0);
     }
   }
   async getSession() {

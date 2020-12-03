@@ -36,6 +36,7 @@
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
 import gql from "graphql-tag";
+import { LOG_IN } from "@/store/mutation-types";
 
 @Component({ components: {} })
 export default class Login extends Vue {
@@ -46,11 +47,17 @@ export default class Login extends Vue {
   async login() {
     try {
       if ((this.$refs.form as any).validate()) {
-        await this.$apollo.mutate({
+        const loginUser = await this.$apollo.mutate({
           mutation: gql`
             mutation($username: String!) {
               loginUser(username: $username) {
+                id
+                first_name
+                last_name
+                nickname
                 username
+                created_at
+                updated_at
               }
             }
           `,
@@ -58,8 +65,19 @@ export default class Login extends Vue {
             username: this.user.username,
           },
         });
-        // this.$router.go(0);
-        this.$router.go(0);
+        console.log(loginUser);
+        if (loginUser.data.loginUser) {
+          const data = loginUser.data.loginUser;
+          this.$store.commit(LOG_IN, {
+            id: data.id,
+            first_name: data.first_name,
+            last_name: data.last_name,
+            nickname: data.nickname,
+            username: data.username,
+            created_at: data.created_at,
+            updated_at: data.updated_at,
+          });
+        }
       }
     } catch (e) {
       console.log("error on login", e);
